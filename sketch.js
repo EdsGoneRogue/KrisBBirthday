@@ -65,69 +65,97 @@ function displayCountdown(timeDiff) {
   fill(255, 255, 100);
   textSize(isMobile ? 28 : 48);
   textStyle(BOLD);
-  text("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.15);
+  text("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.25);
   
   // Buddy's name
   fill(255, 200, 255);
   textSize(isMobile ? 22 : 32);
-  text("Kris's Birthday!", width/2, height * 0.22);
+  text("Kris's Birthday!", width/2, height * 0.32);
   
-  // Countdown display - natural sentence format (no dashes between numbers)
+  // Countdown display - scale text based on screen size
   if (isMobile) {
-    // Mobile: single column, vertically stacked
-    let yPos = height * 0.4;
-    let spacing = height * 0.08;
+    // Mobile: try horizontal first, fallback to vertical for very small screens
+    let scaleFactor = constrain(width / 400, 0.4, 1);
+    let numberSize = 32 * scaleFactor;
+    let labelSize = 16 * scaleFactor;
     
-    textAlign(CENTER, CENTER);
+    // Try to fit horizontally first
+    let testText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    textSize(numberSize);
+    let textW = textWidth(testText);
     
-    // Days
-    fill(255);
-    textSize(40);
-    textStyle(BOLD);
-    text(days, width/2, yPos);
-    fill(255);
-    textSize(20);
-    textStyle(NORMAL);
-    text("days", width/2, yPos + 30);
-    
-    // Hours
-    yPos += spacing;
-    fill(255);
-    textSize(40);
-    textStyle(BOLD);
-    text(hours, width/2, yPos);
-    fill(255);
-    textSize(20);
-    textStyle(NORMAL);
-    text("hours", width/2, yPos + 30);
-    
-    // Minutes
-    yPos += spacing;
-    fill(255);
-    textSize(40);
-    textStyle(BOLD);
-    text(minutes, width/2, yPos);
-    fill(255);
-    textSize(20);
-    textStyle(NORMAL);
-    text("min", width/2, yPos + 30);
-    
-    // Seconds
-    yPos += spacing;
-    fill(255);
-    textSize(40);
-    textStyle(BOLD);
-    text(seconds, width/2, yPos);
-    fill(255);
-    textSize(20);
-    textStyle(NORMAL);
-    text("sec", width/2, yPos + 30);
-    
-    // "till Kris birthday"
-    yPos += spacing;
-    fill(255, 200, 255);
-    textSize(22);
-    text("till Kris birthday", width/2, yPos);
+    if (textW < width - 40) {
+      // Horizontal layout fits
+      let yPos = height * 0.5;
+      textAlign(CENTER, CENTER);
+      
+      fill(255);
+      textSize(numberSize);
+      textStyle(BOLD);
+      
+      let displayText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+      text(displayText, width/2, yPos);
+      
+      fill(255, 200, 255);
+      textSize(labelSize * 1.2);
+      text("till Kris birthday", width/2, yPos + 40 * scaleFactor);
+      
+    } else {
+      // Vertical layout for very small screens
+      let yPos = height * 0.4;
+      let spacing = height * 0.06;
+      
+      textAlign(CENTER, CENTER);
+      
+      // Days
+      fill(255);
+      textSize(numberSize);
+      textStyle(BOLD);
+      text(days, width/2, yPos);
+      fill(255);
+      textSize(labelSize);
+      textStyle(NORMAL);
+      text("days", width/2, yPos + 25 * scaleFactor);
+      
+      // Hours
+      yPos += spacing;
+      fill(255);
+      textSize(numberSize);
+      textStyle(BOLD);
+      text(hours, width/2, yPos);
+      fill(255);
+      textSize(labelSize);
+      textStyle(NORMAL);
+      text("hours", width/2, yPos + 25 * scaleFactor);
+      
+      // Minutes
+      yPos += spacing;
+      fill(255);
+      textSize(numberSize);
+      textStyle(BOLD);
+      text(minutes, width/2, yPos);
+      fill(255);
+      textSize(labelSize);
+      textStyle(NORMAL);
+      text("min", width/2, yPos + 25 * scaleFactor);
+      
+      // Seconds
+      yPos += spacing;
+      fill(255);
+      textSize(numberSize);
+      textStyle(BOLD);
+      text(seconds, width/2, yPos);
+      fill(255);
+      textSize(labelSize);
+      textStyle(NORMAL);
+      text("sec", width/2, yPos + 25 * scaleFactor);
+      
+      // "till Kris birthday"
+      yPos += spacing;
+      fill(255, 200, 255);
+      textSize(labelSize * 1.2);
+      text("till Kris birthday", width/2, yPos);
+    }
     
   } else {
     // Desktop: horizontal sentence format with proper spacing
@@ -251,6 +279,41 @@ function drawDecorations() {
     noStroke();
     ellipse(confettiX, confettiY, isMobile ? 4 : 6, isMobile ? 4 : 6);
   }
+  
+  // Diagonal decoration string from top right to bottom left
+  let decorationCount = isMobile ? 6 : 10;
+  for(let i = 0; i < 2*decorationCount; i++) {
+    let progress = i / (2*decorationCount - 1); // 0 to 1
+    
+    // Base diagonal line from top right to bottom left
+    let baseX = width - (progress * width);
+    let baseY = progress * .25*height;
+    
+    // Add some gentle wave motion
+    let waveOffset = sin(time + i * 0.5) * 20;
+    let decorX = baseX + waveOffset;
+    let decorY = baseY + cos(time * 0.6 + i * 0.3) * 15;
+    
+    // Draw star decorations
+    push();
+    translate(decorX, decorY);
+    rotate(time + i);
+    
+    // Star colors - mix of gold and white
+    if(i % 2 == 0) {
+      fill(255, 215, 0, 180); // Gold
+    } else {
+      fill(255, 255, 255, 180); // White
+    }
+    
+    noStroke();
+    
+    // Draw simple star
+    let starSize = isMobile ? 8 : 12;
+    drawStar(0, 0, starSize * 0.3, starSize, 5);
+    
+    pop();
+  }
 }
 
 function drawBalloon(x, y, balloonColor) {
@@ -270,4 +333,19 @@ function drawBalloon(x, y, balloonColor) {
   // Balloon highlight
   fill(255, 255, 255, 100);
   ellipse(x - 5 * size, y - 8 * size, 8 * size, 12 * size);
+}
+
+function drawStar(x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a) * radius2;
+    let sy = y + sin(a) * radius2;
+    vertex(sx, sy);
+    sx = x + cos(a + halfAngle) * radius1;
+    sy = y + sin(a + halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
 }
