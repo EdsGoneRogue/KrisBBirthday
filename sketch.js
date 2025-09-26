@@ -92,11 +92,11 @@ function displayCountdown(timeDiff) {
   let isMobile = width < 600;
   
   // Title with glow effect - responsive sizing and positioning
-  let titleSize = isMobile ? Math.max(16, width * 0.05) : 48;
-  let nameSize = isMobile ? Math.max(14, width * 0.04) : 32;
+  let titleSize = isMobile ? Math.min(28, Math.max(16, width * 0.05)) : 48;
+  let nameSize = isMobile ? Math.min(22, Math.max(14, width * 0.04)) : 32;
   
-  // Responsive positioning - ensure minimum padding from top
-  let titleY = isMobile ? Math.max(titleSize + 20, height * 0.15) : height * 0.25;
+  // Responsive positioning - ensure minimum padding from top (shifted down 20%)
+  let titleY = isMobile ? Math.max(titleSize + 20, height * 0.35) : height * 0.45;
   let nameY = titleY + (isMobile ? titleSize + 15 : 60);
   
   textSize(titleSize);
