@@ -51,6 +51,36 @@ function draw() {
   drawDecorations();
 }
 
+// Helper function to draw text with outline
+function drawTextWithOutline(txt, x, y, fillCol, strokeCol, strokeW) {
+  // Draw outline
+  fill(strokeCol);
+  for(let i = -strokeW; i <= strokeW; i++) {
+    for(let j = -strokeW; j <= strokeW; j++) {
+      if(i !== 0 || j !== 0) {
+        text(txt, x + i, y + j);
+      }
+    }
+  }
+  // Draw main text
+  fill(fillCol);
+  text(txt, x, y);
+}
+
+// Helper function to draw glowing text
+function drawGlowingText(txt, x, y, mainColor, glowColor, glowSize) {
+  // Draw glow layers
+  for(let i = glowSize; i > 0; i--) {
+    fill(red(glowColor), green(glowColor), blue(glowColor), 30 * (glowSize - i + 1) / glowSize);
+    for(let angle = 0; angle < TWO_PI; angle += PI/4) {
+      text(txt, x + cos(angle) * i, y + sin(angle) * i);
+    }
+  }
+  // Draw main text
+  fill(mainColor);
+  text(txt, x, y);
+}
+
 function displayCountdown(timeDiff) {
   // Calculate time units
   let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -61,16 +91,17 @@ function displayCountdown(timeDiff) {
   // Fixed text sizes that work well on all devices
   let isMobile = width < 600;
   
-  // Title
-  fill(255, 255, 100);
+  // Title with glow effect
   textSize(isMobile ? 28 : 48);
   textStyle(BOLD);
-  text("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.25);
+  drawGlowingText("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.35, 
+                  color(255, 255, 150), color(255, 215, 0), isMobile ? 3 : 5);
   
-  // Buddy's name
-  fill(255, 200, 255);
+  // Buddy's name with outline
   textSize(isMobile ? 22 : 32);
-  text("Kris's Birthday!", width/2, height * 0.32);
+  textStyle(NORMAL);
+  drawTextWithOutline("Kris's Birthday!", width/2, height * 0.42, 
+                      color(255, 200, 255), color(100, 0, 100), 2);
   
   // Countdown display - scale text based on screen size
   if (isMobile) {
@@ -89,12 +120,12 @@ function displayCountdown(timeDiff) {
       let yPos = height * 0.5;
       textAlign(CENTER, CENTER);
       
-      fill(255);
       textSize(numberSize);
       textStyle(BOLD);
       
       let displayText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
-      text(displayText, width/2, yPos);
+      drawTextWithOutline(displayText, width/2, yPos, 
+                          color(255, 255, 255), color(0, 0, 0), Math.max(1, numberSize / 20));
       
       fill(255, 200, 255);
       textSize(labelSize * 1.2);
@@ -108,10 +139,10 @@ function displayCountdown(timeDiff) {
       textAlign(CENTER, CENTER);
       
       // Days
-      fill(255);
       textSize(numberSize);
       textStyle(BOLD);
-      text(days, width/2, yPos);
+      drawTextWithOutline(days.toString(), width/2, yPos, 
+                          color(255, 255, 255), color(0, 0, 0), Math.max(1, numberSize / 20));
       fill(255);
       textSize(labelSize);
       textStyle(NORMAL);
@@ -119,10 +150,10 @@ function displayCountdown(timeDiff) {
       
       // Hours
       yPos += spacing;
-      fill(255);
       textSize(numberSize);
       textStyle(BOLD);
-      text(hours, width/2, yPos);
+      drawTextWithOutline(hours.toString(), width/2, yPos, 
+                          color(255, 255, 255), color(0, 0, 0), Math.max(1, numberSize / 20));
       fill(255);
       textSize(labelSize);
       textStyle(NORMAL);
@@ -130,10 +161,10 @@ function displayCountdown(timeDiff) {
       
       // Minutes
       yPos += spacing;
-      fill(255);
       textSize(numberSize);
       textStyle(BOLD);
-      text(minutes, width/2, yPos);
+      drawTextWithOutline(minutes.toString(), width/2, yPos, 
+                          color(255, 255, 255), color(0, 0, 0), Math.max(1, numberSize / 20));
       fill(255);
       textSize(labelSize);
       textStyle(NORMAL);
@@ -141,10 +172,10 @@ function displayCountdown(timeDiff) {
       
       // Seconds
       yPos += spacing;
-      fill(255);
       textSize(numberSize);
       textStyle(BOLD);
-      text(seconds, width/2, yPos);
+      drawTextWithOutline(seconds.toString(), width/2, yPos, 
+                          color(255, 255, 255), color(0, 0, 0), Math.max(1, numberSize / 20));
       fill(255);
       textSize(labelSize);
       textStyle(NORMAL);
@@ -168,10 +199,10 @@ function displayCountdown(timeDiff) {
     let currentX = baseX;
     
     // "X days"
-    fill(255);
     textSize(48);
     textStyle(BOLD);
-    text(days, currentX, yPos);
+    drawGlowingText(days.toString(), currentX, yPos, 
+                    color(255, 255, 255), color(100, 150, 255), 3);
     currentX += textWidth(days.toString()) + 10;
     
     textSize(24);
@@ -182,7 +213,8 @@ function displayCountdown(timeDiff) {
     // "X hours"
     textSize(48);
     textStyle(BOLD);
-    text(hours, currentX, yPos);
+    drawGlowingText(hours.toString(), currentX, yPos, 
+                    color(255, 255, 255), color(100, 150, 255), 3);
     currentX += textWidth(hours.toString()) + 10;
     
     textSize(24);
@@ -193,7 +225,8 @@ function displayCountdown(timeDiff) {
     // "X min"
     textSize(48);
     textStyle(BOLD);
-    text(minutes, currentX, yPos);
+    drawGlowingText(minutes.toString(), currentX, yPos, 
+                    color(255, 255, 255), color(100, 150, 255), 3);
     currentX += textWidth(minutes.toString()) + 10;
     
     textSize(24);
@@ -204,7 +237,8 @@ function displayCountdown(timeDiff) {
     // "X sec"
     textSize(48);
     textStyle(BOLD);
-    text(seconds, currentX, yPos);
+    drawGlowingText(seconds.toString(), currentX, yPos, 
+                    color(255, 255, 255), color(100, 150, 255), 3);
     currentX += textWidth(seconds.toString()) + 10;
     
     textSize(24);
@@ -219,16 +253,16 @@ function displayCountdown(timeDiff) {
   }
   
   // Birthday date
-  fill(200, 200, 255);
-  textSize(isMobile ? 14 : 18);
-  textStyle(NORMAL);
-  let dateString = birthdayDate.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  text("Birthday: " + dateString, width/2, height * 0.85);
+  // fill(200, 200, 255);
+  // textSize(isMobile ? 14 : 18);
+  // textStyle(NORMAL);
+  // let dateString = birthdayDate.toLocaleDateString('en-US', { 
+  //   weekday: 'long', 
+  //   year: 'numeric', 
+  //   month: 'long', 
+  //   day: 'numeric' 
+  // });
+  //text("Birthday: " + dateString, width/2, height * 0.85);
 }
 
 function displayBirthdayMessage() {
