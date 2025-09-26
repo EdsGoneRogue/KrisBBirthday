@@ -91,33 +91,41 @@ function displayCountdown(timeDiff) {
   // Fixed text sizes that work well on all devices
   let isMobile = width < 600;
   
-  // Title with glow effect
-  textSize(isMobile ? 100 : 23);
+  // Title with glow effect - responsive sizing and positioning
+  let titleSize = isMobile ? Math.max(16, width * 0.05) : 48;
+  let nameSize = isMobile ? Math.max(14, width * 0.04) : 32;
+  
+  // Responsive positioning - ensure minimum padding from top
+  let titleY = isMobile ? Math.max(titleSize + 20, height * 0.15) : height * 0.25;
+  let nameY = titleY + (isMobile ? titleSize + 15 : 60);
+  
+  textSize(titleSize);
   textStyle(BOLD);
-  drawGlowingText("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.35, 
-                  color(255, 255, 150), color(255, 215, 0), isMobile ? 3 : 5);
+  drawGlowingText("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, titleY, 
+                  color(255, 255, 150), color(255, 215, 0), isMobile ? 2 : 5);
   
   // Buddy's name with outline
-  textSize(isMobile ? 22 : 32);
+  textSize(nameSize);
   textStyle(NORMAL);
-  drawTextWithOutline("Kris's Birthday!", width/2, height * 0.42, 
-                      color(255, 200, 255), color(100, 0, 100), 2);
+  drawTextWithOutline("Kris's Birthday!", width/2, nameY, 
+                      color(255, 200, 255), color(100, 0, 100), isMobile ? 1 : 2);
   
   // Countdown display - scale text based on screen size
   if (isMobile) {
     // Mobile: try horizontal first, fallback to vertical for very small screens
-    let scaleFactor = constrain(width / 400, 0.4, 1);
-    let numberSize = 32 * scaleFactor;
-    let labelSize = 16 * scaleFactor;
+    let scaleFactor = constrain(width / 450, 0.3, 0.8); // More conservative scaling
+    let numberSize = 28 * scaleFactor; // Smaller base size
+    let labelSize = 14 * scaleFactor;
     
-    // Try to fit horizontally first
+    // Try to fit horizontally first - account for outline padding
     let testText = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
     textSize(numberSize);
     let textW = textWidth(testText);
+    let outlinePadding = Math.max(1, numberSize / 20) * 4; // Account for outline width
     
-    if (textW < width - 40) {
+    if (textW + outlinePadding < width - 60) { // More padding
       // Horizontal layout fits
-      let yPos = height * 0.5;
+      let yPos = Math.max(nameY + nameSize + 40, height * 0.45);
       textAlign(CENTER, CENTER);
       
       textSize(numberSize);
@@ -133,8 +141,9 @@ function displayCountdown(timeDiff) {
       
     } else {
       // Vertical layout for very small screens
-      let yPos = height * 0.4;
-      let spacing = height * 0.06;
+      let yPos = Math.max(nameY + nameSize + 30, height * 0.35);
+      let maxSpacing = (height - yPos - 100) / 5; // Calculate max spacing to fit all elements
+      let spacing = Math.min(maxSpacing, 35); // Limit spacing to prevent overflow
       
       textAlign(CENTER, CENTER);
       
