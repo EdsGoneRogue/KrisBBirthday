@@ -92,7 +92,7 @@ function displayCountdown(timeDiff) {
   let isMobile = width < 600;
   
   // Title with glow effect
-  textSize(isMobile ? 100 : 43);
+  textSize(isMobile ? 100 : 23);
   textStyle(BOLD);
   drawGlowingText("🎉 BIRTHDAY COUNTDOWN 🎉", width/2, height * 0.35, 
                   color(255, 255, 150), color(255, 215, 0), isMobile ? 3 : 5);
