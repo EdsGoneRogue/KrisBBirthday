@@ -1,6 +1,6 @@
 // Set your buddy's birthday here (year, month-1, day, hour, minute, second)
-// Note: month is 0-indexed (0 = January, 11 = December)
-let birthdayDate = new Date(2024, 11, 25, 0, 0, 0); // December 25, 2024
+// Note: month is 0-indexed (0 = January, 9 = October)
+let birthdayDate = new Date(2025, 9,8, 0, 0, 0); // October 8, 2025
 
 function setup() {
   // Make canvas responsive - fill the window
@@ -25,13 +25,25 @@ function draw() {
   // Get current time
   let now = new Date();
   
-  // Calculate time difference
-  let timeDiff = birthdayDate.getTime() - now.getTime();
+  // Check if today is the birthday (same month and day)
+  let todayMonth = now.getMonth();
+  let todayDay = now.getDate();
+  let birthdayMonth = birthdayDate.getMonth();
+  let birthdayDay = birthdayDate.getDate();
   
-  // Check if birthday has passed
-  if (false && timeDiff <= 0) {
+  if (todayMonth === birthdayMonth && todayDay === birthdayDay) {
+    // It's the birthday today!
     displayBirthdayMessage();
   } else {
+    // Calculate time until next birthday
+    let nextBirthday = new Date(now.getFullYear(), birthdayMonth, birthdayDay);
+    
+    // If this year's birthday has already passed, use next year
+    if (nextBirthday.getTime() <= now.getTime()) {
+      nextBirthday.setFullYear(now.getFullYear() + 1);
+    }
+    
+    let timeDiff = nextBirthday.getTime() - now.getTime();
     displayCountdown(timeDiff);
   }
   
@@ -60,7 +72,7 @@ function displayCountdown(timeDiff) {
   textSize(isMobile ? 22 : 32);
   text("Kris's Birthday!", width/2, height * 0.22);
   
-  // Countdown display - natural sentence format
+  // Countdown display - natural sentence format (no dashes between numbers)
   if (isMobile) {
     // Mobile: single column, vertically stacked
     let yPos = height * 0.4;
