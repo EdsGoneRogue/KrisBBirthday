@@ -2,10 +2,32 @@
 // Note: month is 0-indexed (0 = January, 9 = October)
 let birthdayDate = new Date(2025, 9,8, 0, 0, 0); // October 8, 2025
 
+// Temporary override for testing
+let showBirthdayOverride = false;
+let overrideButton;
+let krisImage;
+
+function preload() {
+  // Load Kris's image
+  krisImage = loadImage('krisimage.jpg');
+}
+
 function setup() {
   // Make canvas responsive - fill the window
   createCanvas(windowWidth, windowHeight);
   textAlign(CENTER, CENTER);
+  
+  // Create temporary override button
+  overrideButton = createButton('🎂 Show Birthday Message');
+  overrideButton.position(10, 10);
+  overrideButton.style('background-color', '#ff69b4');
+  overrideButton.style('color', 'white');
+  overrideButton.style('border', 'none');
+  overrideButton.style('padding', '10px 15px');
+  overrideButton.style('border-radius', '5px');
+  overrideButton.style('cursor', 'pointer');
+  overrideButton.style('font-size', '14px');
+  overrideButton.mousePressed(toggleBirthdayMessage);
 }
 
 function windowResized() {
@@ -31,10 +53,15 @@ function draw() {
   let birthdayMonth = birthdayDate.getMonth();
   let birthdayDay = birthdayDate.getDate();
   
-  if (todayMonth === birthdayMonth && todayDay === birthdayDay) {
-    // It's the birthday today!
+  // Check override first, then actual birthday
+  if (showBirthdayOverride || (todayMonth === birthdayMonth && todayDay === birthdayDay)) {
+    // Add birthday decorations first (behind the text)
+    drawDecorations();
+    // Show birthday message (either override or actual birthday)
     displayBirthdayMessage();
   } else {
+    // Add decorations first (behind the text)
+    drawDecorations();
     // Calculate time until next birthday
     let nextBirthday = new Date(now.getFullYear(), birthdayMonth, birthdayDay);
     
@@ -46,9 +73,6 @@ function draw() {
     let timeDiff = nextBirthday.getTime() - now.getTime();
     displayCountdown(timeDiff);
   }
-  
-  // Add some birthday decorations
-  drawDecorations();
 }
 
 // Helper function to draw text with outline
@@ -199,7 +223,7 @@ function displayCountdown(timeDiff) {
     
   } else {
     // Desktop: horizontal sentence format with proper spacing
-    let yPos = height * 0.5;
+    let yPos = Math.max(nameY + nameSize + 60, height * 0.65);
     
     textAlign(LEFT, CENTER);
     
@@ -277,21 +301,52 @@ function displayCountdown(timeDiff) {
 function displayBirthdayMessage() {
   let isMobile = width < 600;
   
+  // Adjust positioning to make room for image
+  let topY = height * 0.15;
+  
   // Birthday celebration message
   fill(255, 100, 150);
-  textSize(isMobile ? 32 : 48);
+  textSize(isMobile ? 28 : 42);
   textStyle(BOLD);
-  text("🎂 HAPPY BIRTHDAY! 🎂", width/2, height/2 - 50);
+  text("🎂 HAPPY BIRTHDAY! 🎂", width/2, topY);
   
   fill(255, 255, 100);
-  textSize(isMobile ? 20 : 32);
-  text("Hope you have an amazing day!", width/2, height/2 + 20);
+  textSize(isMobile ? 18 : 28);
+  text("Hope you have an amazing day!", width/2, topY + (isMobile ? 40 : 60));
   
   // Animate some excitement
   let bounce = sin(frameCount * 0.2) * 10;
   fill(255, 200, 255);
-  textSize(isMobile ? 18 : 24);
-  text("🎈 Party Time! 🎈", width/2, height/2 + 80 + bounce);
+  textSize(isMobile ? 16 : 22);
+  text("🎈 Party Time! 🎈", width/2, topY + (isMobile ? 80 : 120) + bounce);
+  
+  // Display Kris's image under the text
+  if (krisImage) {
+    let imageY = topY + (isMobile ? 120 : 180);
+    let maxImageWidth = isMobile ? width * 0.8 : width * 0.4;
+    let maxImageHeight = height - imageY - 40; // Leave some bottom padding
+    
+    // Calculate scaling to fit within constraints while maintaining aspect ratio
+    let scaleW = maxImageWidth / krisImage.width;
+    let scaleH = maxImageHeight / krisImage.height;
+    let scale = Math.min(scaleW, scaleH);
+    
+    let displayWidth = krisImage.width * scale;
+    let displayHeight = krisImage.height * scale;
+    
+    // Center the image horizontally
+    let imageX = (width - displayWidth) / 2;
+    
+    // Draw image with rounded corners effect
+    push();
+    // Add a subtle border/frame effect
+    fill(255, 255, 255, 200);
+    rect(imageX - 5, imageY - 5, displayWidth + 10, displayHeight + 10, 10);
+    
+    // Draw the actual image
+    image(krisImage, imageX, imageY, displayWidth, displayHeight);
+    pop();
+  }
 }
 
 
@@ -391,4 +446,15 @@ function drawStar(x, y, radius1, radius2, npoints) {
     vertex(sx, sy);
   }
   endShape(CLOSE);
+}
+
+// Toggle function for birthday message override
+function toggleBirthdayMessage() {
+  showBirthdayOverride = !showBirthdayOverride;
+  
+  if (showBirthdayOverride) {
+    overrideButton.html('🎉 Show Countdown');
+  } else {
+    overrideButton.html('🎂 Show Birthday Message');
+  }
 }
